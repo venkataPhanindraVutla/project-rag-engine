@@ -2,21 +2,24 @@ import os
 from groq import Groq
 from sentence_transformers import SentenceTransformer
 import chromadb
+from chromadb.config import Settings
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
 # --- Configuration ---
-CHROMA_HOST = os.getenv("CHROMA_HOST")
-CHROMA_PORT = os.getenv("CHROMA_PORT")
-CHROMA_COLLECTION = os.getenv("CHROMA_COLLECTION_NAME")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME")
+CHROMA_HOST = os.getenv("CHROMA_HOST", "chroma")
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
+CHROMA_COLLECTION = os.getenv("CHROMA_COLLECTION_NAME", "web_content")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-print(GROQ_API_KEY)
 
 # --- Initialize Clients and Models ---
 
-# Initialize a persistent ChromaDB client
-chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+# Initialize a persistent ChromaDB client (disable telemetry to avoid ClientStartEvent noise)
+chroma_client = chromadb.HttpClient(
+    host=CHROMA_HOST,
+    port=CHROMA_PORT,
+    settings=Settings(anonymized_telemetry=False)
+)
 
 # Initialize the embedding function/model
 embedding_function = SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODEL)

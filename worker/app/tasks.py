@@ -4,7 +4,7 @@ from app.database import ingestion_jobs
 from app.ingest import fetch_and_clean_text, chunk_text, store_chunks_in_db
 
 @celery_app.task(name="process_url_task", bind=True)
-def process_url_task(job_id: str, url: str):
+def process_url_task(self, job_id: str, url: str):
     """
     The main background task to process a URL.
     - Updates job status in PostgreSQL.
